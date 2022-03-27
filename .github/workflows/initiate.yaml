@@ -1,0 +1,32 @@
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: "Template Initiation"
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  template-initiation:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.repository.name != 'CR4-DL' }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Format template and replace
+        run: |
+          sed -i "s|%GITHUB_REPOSITORY%|${{ github.repository }}|g" .github/templates/README.md
+          sed -i "s|%GITHUB_REPOSITORY_NAME%|${{ github.event.repository.name }}|g" .github/templates/README.md
+          mv .github/templates/README.md README.md
+
+      - name: Clear initiation script
+        run: |
+          rm -f .github/workflows/initiate.yaml
+
+      - name: Create commit
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          git commit -m "Initiation by template"
+          git push
