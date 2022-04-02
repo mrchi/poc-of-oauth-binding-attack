@@ -4,6 +4,8 @@
 
 一个用于演示 OAuth 2.0 账号绑定攻击的 POC，以 leetcode-cn.com 为例。
 
+**leetcode-cn.com 目前已修复该漏洞，本 repo 公开已获得 leetcode-cn.com 同意。**
+
 ## POC 说明
 
 在 leetcode-cn.com 上的漏洞利用条件：
@@ -72,10 +74,13 @@ leetcode-cn.com 把第三方发起的 OAuth 授权回调，误认为了是受害
 
 ### 防御
 
-根据 OAuth 协议，服务在向认证服务器发起 OAuth 重定向时，可以携带一个 state 参数，认证服务器在用户授权后回调重定向到服务时，会把这个 state 参数带上。可以通过校验 state 参数来确认 OAuth 请求来源不是第三方。
+根据 OAuth 协议，服务在向认证服务器发起 OAuth 重定向时，可以携带一个 state 参数，认证服务器在用户授权后回调重定向到服务时，会把这个 state 参数带回。可以通过校验 state 参数来确认 OAuth 请求来源不是第三方。
 
 具体流程：
-1. 发起 OAuth 重定向时，带上随机的 state 参数，同时把 state 参数设置到 cookie 中；
-2. 收到 OAuth 回调时，检验认证服务器返回的 state 参数与 cookie 中 state 参数是否一致。
+1. 发起 OAuth 重定向时，带上随机的 state 参数，同时把 state 参数保存到用户浏览器本地（例如 cookie 中）；
+2. 收到 OAuth 回调时，检查：
+    - 认证服务器返回的 state 参数存在；
+    - 用户浏览器本地带上的 state 参数存在；
+    - 上述 state 参数一致；
 
-第三方攻击者可以诱骗受害者点击链接，但无法修改受害者浏览器中的 cookie，达到防御目的。
+第三方攻击者可以诱骗受害者点击链接，但无法修改受害者浏览器中本地的 state 参数，达到防御目的。
