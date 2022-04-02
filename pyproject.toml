@@ -1,7 +1,7 @@
 # https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html
 [tool.black]
 target-version = ["py39"]
-required-version = "21.7b0"
+required-version = "22.3.0"
 line-length = 88
 
 
